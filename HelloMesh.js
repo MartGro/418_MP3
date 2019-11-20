@@ -142,6 +142,10 @@ var uTextureCube;
 
 var eulerY=0;
 
+var worldRotation = 0;
+
+var worldRotationSpeed = 0.1;
+
 
 
 //-------------------------------------------------------------------------
@@ -673,9 +677,9 @@ function draw() {
 
     // We want to look down -z, so create a lookat point in that direction
 
-    vec3.add(viewPt, eyePt, viewDir);
+    //vec3.add(viewPt, eyePt, viewDir);
 
-
+    vec3.fromValues(viewPt,0,0,0);
 
     // Then generate the lookat matrix and initialize the view matrix to that view
 
@@ -790,15 +794,37 @@ function handleKeyDown(event) {
 
             event.preventDefault();
 
-            eyePt[2]+= 0.01;
+            worldRotation -= worldRotationSpeed;
+
+            var eyePt_x = eyePt[0];
+            var eyePt_y = eyePt[2];
+
+
+
+            eyePt[0] = Math.cos(-worldRotationSpeed)*eyePt_x-Math.sin(-worldRotationSpeed)*eyePt_y;
+            eyePt[2] = Math.sin(-worldRotationSpeed)*eyePt_x+Math.cos(-worldRotationSpeed)*eyePt_y;
+
+
+            //eyePt[2]+= 0.01;
 
         } else if (currentlyPressedKeys["ArrowDown"]){
 
             event.preventDefault();
 
             // Down cursor key
+            worldRotation += worldRotationSpeed;
+            var eyePt_x = eyePt[0];
+            var eyePt_y = eyePt[2];
 
-            eyePt[2]-= 0.01;
+
+
+            eyePt[0] = Math.cos(worldRotationSpeed)*eyePt_x-Math.sin(worldRotationSpeed)*eyePt_y;
+            eyePt[2] = Math.sin(worldRotationSpeed)*eyePt_x+Math.cos(worldRotationSpeed)*eyePt_y;
+
+            console.log(eyePt)
+
+
+            //eyePt[2]-= 0.01;
 
         }
 
@@ -868,7 +894,7 @@ function animate() {
 
    document.getElementById("eY").value=eulerY;
 
-   document.getElementById("eZ").value=eyePt[2];
+   document.getElementById("eZ").value=worldRotation;
 
 }
 
