@@ -39,6 +39,9 @@ var mvMatrix = mat4.create();
 var vMatrix = mat4.create();
 
 
+var yRotationMatrix = mat4.create();
+
+
 
 /** @global The Projection matrix */
 
@@ -190,7 +193,16 @@ function asyncGetFile(url) {
 
 function uploadModelViewMatrixToShader() {
 
+	
+
+
+
+  gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
+
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+
+  gl.uniformMatrix4fv(shaderProgram.yRotationMatrixUniform, false, yRotationMatrix);
+
 
 }
 
@@ -523,6 +535,13 @@ function setupShaders() {
 
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
 
+  shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
+
+  shaderProgram.yRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYRotationMatrix");
+
+
+
+
   shaderProgram.uniformLightPositionLoc = gl.getUniformLocation(shaderProgram, "uLightPosition");
 
   shaderProgram.uniformAmbientLightColorLoc = gl.getUniformLocation(shaderProgram, "uAmbientLightColor");
@@ -695,6 +714,9 @@ function draw() {
 
         mvPushMatrix();
 
+
+        mat4.fromRotation(yRotationMatrix, worldRotation, vec3.fromValues(0,1,0));
+
         mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY));
 
         mat4.multiply(mvMatrix,vMatrix,mvMatrix);
@@ -784,6 +806,8 @@ function handleKeyDown(event) {
 
             eulerY+= 1;
 
+         
+
         }
 
 
@@ -805,6 +829,7 @@ function handleKeyDown(event) {
             eyePt[2] = Math.sin(-worldRotationSpeed)*eyePt_x+Math.cos(-worldRotationSpeed)*eyePt_y;
 
 
+
             //eyePt[2]+= 0.01;
 
         } else if (currentlyPressedKeys["ArrowDown"]){
@@ -820,9 +845,6 @@ function handleKeyDown(event) {
 
             eyePt[0] = Math.cos(worldRotationSpeed)*eyePt_x-Math.sin(worldRotationSpeed)*eyePt_y;
             eyePt[2] = Math.sin(worldRotationSpeed)*eyePt_x+Math.cos(worldRotationSpeed)*eyePt_y;
-
-            console.log(eyePt)
-
 
             //eyePt[2]-= 0.01;
 

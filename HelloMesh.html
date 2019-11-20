@@ -13,7 +13,11 @@
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
-        uniform mat3 uNMatrix;
+    uniform mat4 uVMatrix;
+    
+    uniform mat4 uYRotationMatrix;
+    
+    uniform mat3 uNMatrix;
 
     uniform vec3 uLightPosition;
     uniform vec3 uAmbientLightColor;
@@ -60,15 +64,19 @@ precision highp float;
 //new
 //uniform sampler2D uSampler;
 uniform samplerCube uCubeSampler;
+uniform mat4 uYRotationMatrix;
 
 varying vec3 vertexPositionEye3;
+
 varying vec3 normalEye;
 
 void main(void) {
         vec3 viewVectorEye = normalize(vertexPositionEye3);
         vec3 direction = reflect(viewVectorEye,normalEye);
+        
+        vec4 worldRotationDirection = uYRotationMatrix*vec4(direction,0);
 
-        gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);
+        gl_FragColor =textureCube(uCubeSampler, worldRotationDirection.xyz);// textureCube(uCubeSampler, vVertexNormal);
 
  }
 </script>
