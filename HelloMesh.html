@@ -89,6 +89,7 @@ precision highp float;
 //new
 //uniform sampler2D uSampler;
 uniform samplerCube uCubeSampler;
+uniform mat4 uYRotationMatrix;
 
 varying vec3 vertexPositionEye3;
 varying vec3 normalEye;
@@ -96,7 +97,10 @@ varying vec3 normalEye;
 void main(void) {
         vec3 viewVectorEye = normalize(vertexPositionEye3);
         vec3 direction = refract(viewVectorEye,normalEye,1.0/1.33);
-        gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);
+        vec4 worldRotationDirection = uYRotationMatrix*vec4(direction,0);
+
+        gl_FragColor =textureCube(uCubeSampler, worldRotationDirection.xyz);
+        //gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);
 
  }
 </script>
