@@ -132,6 +132,8 @@ var kEdgeBlack = [0.0,0.0,0.0];
 
 var kEdgeWhite = [1.0,1.0,1.0];
 
+var uTextureCube;
+
 
 
 
@@ -462,11 +464,12 @@ function loadShaderFromDOM(id) {
 
 function setupShaders() {
 
-  vertexShader = loadShaderFromDOM("shader-vs");
+  vertexShader = loadShaderFromDOM("reflection-shader-vs");
 
-  fragmentShader = loadShaderFromDOM("shader-fs");
+  fragmentShader = loadShaderFromDOM("reflection-shader-fs");
 
 
+ console.log(fragmentShader);
 
   shaderProgram = gl.createProgram();
 
@@ -487,6 +490,8 @@ function setupShaders() {
 
 
   gl.useProgram(shaderProgram);
+
+  uTextureCube = texture_creation(gl);
 
 
 
@@ -529,7 +534,8 @@ function setupShaders() {
   shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
 
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
-  shaderProgram.cubeSampler = gl.getUniformLocation(shaderProgram,uCubeSampler);
+
+  shaderProgram.cubeSamplerLoc = gl.getUniformLocation(shaderProgram,"uCubeSampler");
 
 }
 
@@ -828,7 +834,7 @@ function handleKeyUp(event) {
 
   setupShaders();
 
-   setupMesh("cow.obj");
+  setupMesh("cow.obj");
 
   //setupMesh("teapot.obj");
 
@@ -887,3 +893,129 @@ function tick() {
     draw();
 
 }
+
+
+
+
+
+
+
+function texture_creation(gl)
+{
+  // Create a texture.
+  var texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+
+
+//BLOCKREMOVED
+
+  //start insertion
+/*
+   var loadCubemapFace= function(gl, target, texture, url) {
+      var image = new Image();
+      image.onload = function(){
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texImage2D(target, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+      }
+      image.src = url;
+  };
+    
+        var texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        loadCubemapFace(gl, gl.TEXTURE_CUBE_MAP_POSITIVE_X, texture, 'London/pos_x.png');
+	      loadCubemapFace(gl, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,texture, 'London/neg_x.png');
+	      loadCubemapFace(gl, gl.TEXTURE_CUBE_MAP_POSITIVE_Y,texture, 'London/pos_y.png');
+	      loadCubemapFace(gl, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, texture, 'London/neg_y.png');
+	      loadCubemapFace(gl, gl.TEXTURE_CUBE_MAP_POSITIVE_Z, texture, 'London/pos_z.png');
+	      loadCubemapFace(gl, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, texture, 'London/neg_z.png');
+
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    //end insertion
+
+*/
+//BLOCKREMOVED
+
+  const faceInfos = [
+    {
+      target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+      url: 'London/pos-x.png',
+    },
+    {
+      target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+      url: 'London/neg-x.png',
+    },
+    {
+      target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+      url: 'London/pos-y.png',
+    },
+    {
+      target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+      url: 'London/neg-y.png',
+    },
+    {
+      target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+      url: 'London/pos-z.png',
+    },
+    {
+      target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+      url: 'London/neg-z.png',
+    },
+  ];
+
+
+  faceInfos.forEach((faceInfo) => {
+    const {target, url} = faceInfo;
+
+    // Upload the canvas to the cubemap face.
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const width = 512;
+    const height = 512;
+    const format = gl.RGBA;
+    const type = gl.UNSIGNED_BYTE;
+
+    // setup each face so it's immediately renderable
+
+    gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null);
+
+    // Asynchronously load an image
+    const image = new Image();
+    image.src = url;
+    image.addEventListener('load', function() {
+      // Now that the image has loaded make copy it to the texture.
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+      gl.texImage2D(target, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      //gl.texImage2D(target, level, internalFormat, format, type, image);
+      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+    });
+  });
+
+//BLOCKREMOVED
+
+  //START insertion  
+/*
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.uniform1i(textureLocation, 0);
+*/
+  //END insertion
+
+  gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  return texture
+}
+
+
+
+
+
+
+
+

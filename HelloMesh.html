@@ -13,6 +13,7 @@
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
+        uniform mat3 uNMatrix;
 
     uniform vec3 uLightPosition;
     uniform vec3 uAmbientLightColor;
@@ -52,7 +53,7 @@
     }
 </script>
 
-<script id="shader-fs" type="x-shader/x-fragment">
+<script id="reflection-shader-fs" type="x-shader/x-fragment">
 precision highp float;
 
 //new
