@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Hello Mesh </title>
+<meta charset="utf-8">
+</head>
+
+
+<script id="reflection-shader-vs" type="x-shader/x-vertex">
+
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    uniform vec3 uLightPosition;
+    uniform vec3 uAmbientLightColor;
+    uniform vec3 uDiffuseLightColor;
+    uniform vec3 uSpecularLightColor;
+
+    uniform vec3 uKAmbient;
+    uniform vec3 uKDiffuse;
+    uniform vec3 uKSpecular;
+    uniform float uShininess;
+
+    //varying vec3 vWorldPosition;
+    //varying vec3 vWorldNormal;
+
+    varying vec3 vertexPositionEye3;
+    varying vec3 normalEye;
+
+    void main(void) {
+
+    // Get the vertex position in eye coordinates
+    vec4 vertexPositionEye4 = uMVMatrix * vec4(aVertexPosition, 1.0);
+
+    vertexPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;
+
+    // Transform the normal (n) to eye coordinates
+    normalEye = normalize(uNMatrix * aVertexNormal);
+
+    // The camera in eye coordinates is located in the origin and is pointing
+    // along the negative z-axis. Calculate viewVector (v)
+    // in eye coordinates as:
+    // (0.0, 0.0, 0.0) - vertexPositionEye3
+    vec3 viewVectorEye = -normalize(vertexPositionEye3);
+
+    gl_Position = uPMatrix*uMVMatrix*vec4(aVertexPosition, 1.0);
+    //vColor=vec4(normalEye,1);
+   
+    }
+</script>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+precision highp float;
+
+//new
+//uniform sampler2D uSampler;
+uniform samplerCube uCubeSampler;
+
+varying vec3 vertexPositionEye3;
+varying vec3 normalEye;
+
+void main(void) {
+        vec3 viewVectorEye = -normalize(vertexPositionEye3);
+        vec3 direction = reflect(viewVectorEye,normalEye);
+
+        gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);
+
+ }
+</script>
+
+
+<script src="gl-matrix-min.js"></script>
+<script src="webgl-utils.js"></script>
+<script src="TriMesh.js"></script>
+<script src="CubeMesh.js"></script>
+
+<script src="HelloMesh.js"></script>
+<body onload="startup();">
+ <canvas id="myGLCanvas" width="800" height="800"></canvas>
+    <form id="input_form">
+        <fieldset>
+            <legend>Rendering Parameters</legend>
+         <input type="radio" name="primitive" id="wireframe" value="wireframe"> Wireframe
+         <input type="radio" name="primitive" id="polygon" id="polygon" value="polygon" checked> Polygon
+         <input type="radio" name="primitive" id="wirepoly" value="wirepoly" > Polygon with Edges
+        </fieldset>
+        <fieldset>
+            <legend>Mesh Pose and Camera Position</legend>
+         <emph>Euler Y:</emph> <input type="number" id="eY" value="0"> Keys A and D <br><br>
+         <emph>Eye Z position:</emph> <input type="number" id="eZ" value="0" > Keys ArrowUp and ArrowDown
+        </fieldset>
+        </form>
+</body>
+
+</html>
