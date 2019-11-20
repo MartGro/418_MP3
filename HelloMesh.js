@@ -715,7 +715,7 @@ function draw() {
         mvPushMatrix();
 
 
-        mat4.fromRotation(yRotationMatrix, worldRotation, vec3.fromValues(0,1,0));
+        mat4.fromRotation(yRotationMatrix, worldRotation, vec3.fromValues(0,-1,0));
 
         mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY));
 
@@ -821,12 +821,12 @@ function handleKeyDown(event) {
             worldRotation -= worldRotationSpeed;
 
             var eyePt_x = eyePt[0];
-            var eyePt_y = eyePt[2];
+            var eyePt_z = eyePt[2];
 
 
 
-            eyePt[0] = Math.cos(-worldRotationSpeed)*eyePt_x-Math.sin(-worldRotationSpeed)*eyePt_y;
-            eyePt[2] = Math.sin(-worldRotationSpeed)*eyePt_x+Math.cos(-worldRotationSpeed)*eyePt_y;
+            eyePt[0] = Math.cos(-worldRotationSpeed)*eyePt_x-Math.sin(-worldRotationSpeed)*eyePt_z;
+            eyePt[2] = Math.sin(-worldRotationSpeed)*eyePt_x+Math.cos(-worldRotationSpeed)*eyePt_z;
 
 
 
@@ -839,12 +839,12 @@ function handleKeyDown(event) {
             // Down cursor key
             worldRotation += worldRotationSpeed;
             var eyePt_x = eyePt[0];
-            var eyePt_y = eyePt[2];
+            var eyePt_z = eyePt[2];
 
 
 
-            eyePt[0] = Math.cos(worldRotationSpeed)*eyePt_x-Math.sin(worldRotationSpeed)*eyePt_y;
-            eyePt[2] = Math.sin(worldRotationSpeed)*eyePt_x+Math.cos(worldRotationSpeed)*eyePt_y;
+            eyePt[0] = Math.cos(worldRotationSpeed)*eyePt_x-Math.sin(worldRotationSpeed)*eyePt_z;
+            eyePt[2] = Math.sin(worldRotationSpeed)*eyePt_x+Math.cos(worldRotationSpeed)*eyePt_z;
 
             //eyePt[2]-= 0.01;
 
