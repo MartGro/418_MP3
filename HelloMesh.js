@@ -636,6 +636,8 @@ function setupMesh(filename) {
 
   cube =  new CubeMesh();
 
+  skybox = new skybox();
+
 
 
   myMesh = new TriMesh();
@@ -739,6 +741,7 @@ function draw() {
             //no cow this time
             myMesh.drawTriangles();
             cube.drawTriangles();
+            skybox.drawTriangles();
 
         }
 
@@ -941,6 +944,12 @@ function tick() {
     draw();
 
 }
+
+
+
+
+
+
 
 
 
