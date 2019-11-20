@@ -56,6 +56,7 @@
 <script id="reflection-shader-fs" type="x-shader/x-fragment">
 precision highp float;
 
+
 //new
 //uniform sampler2D uSampler;
 uniform samplerCube uCubeSampler;
@@ -64,7 +65,7 @@ varying vec3 vertexPositionEye3;
 varying vec3 normalEye;
 
 void main(void) {
-        vec3 viewVectorEye = -normalize(vertexPositionEye3);
+        vec3 viewVectorEye = normalize(vertexPositionEye3);
         vec3 direction = reflect(viewVectorEye,normalEye);
 
         gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);

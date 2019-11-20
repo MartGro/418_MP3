@@ -70,7 +70,7 @@ var myMesh;
 
 /** @global Location of the camera in world coordinates */
 
-var eyePt = vec3.fromValues(0.0,0.0,10.0);
+var eyePt = vec3.fromValues(0.0,0.0,2.0);
 
 /** @global Direction of the view in world coordinates */
 
@@ -711,7 +711,7 @@ function draw() {
 
 
             //no cow this time
-            //myMesh.drawTriangles();
+            myMesh.drawTriangles();
             cube.drawTriangles();
 
         }
