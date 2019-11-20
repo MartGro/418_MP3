@@ -74,6 +74,30 @@ void main(void) {
 </script>
 
 
+<script id="refraction-shader-fs" type="x-shader/x-fragment">
+precision highp float;
+
+
+//new
+//uniform sampler2D uSampler;
+uniform samplerCube uCubeSampler;
+
+varying vec3 vertexPositionEye3;
+varying vec3 normalEye;
+
+void main(void) {
+        vec3 viewVectorEye = normalize(vertexPositionEye3);
+        vec3 direction = refract(viewVectorEye,normalEye,1.0/1.33);
+        gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);
+
+ }
+</script>
+
+
+
+
+
+
 <script src="gl-matrix-min.js"></script>
 <script src="webgl-utils.js"></script>
 <script src="TriMesh.js"></script>

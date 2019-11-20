@@ -466,7 +466,7 @@ function setupShaders() {
 
   vertexShader = loadShaderFromDOM("reflection-shader-vs");
 
-  fragmentShader = loadShaderFromDOM("reflection-shader-fs");
+  fragmentShader = loadShaderFromDOM("refraction-shader-fs");
 
 
  console.log(fragmentShader);
