@@ -70,7 +70,7 @@ var myMesh;
 
 /** @global Location of the camera in world coordinates */
 
-var eyePt = vec3.fromValues(0.0,0.0,2.0);
+var eyePt = vec3.fromValues(0.0,1.0,10.0);
 
 /** @global Direction of the view in world coordinates */
 
@@ -466,7 +466,7 @@ function setupShaders() {
 
   vertexShader = loadShaderFromDOM("reflection-shader-vs");
 
-  fragmentShader = loadShaderFromDOM("refraction-shader-fs");
+  fragmentShader = loadShaderFromDOM("reflection-shader-fs");
 
 
  console.log(fragmentShader);
@@ -834,7 +834,7 @@ function handleKeyUp(event) {
 
   setupShaders();
 
-  setupMesh("cow.obj");
+  setupMesh("teapot_0.obj");
 
   //setupMesh("teapot.obj");
 
