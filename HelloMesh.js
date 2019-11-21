@@ -38,6 +38,9 @@ var phongShaderProgram;
 
 var mvMatrix = mat4.create();
 
+var lightPositionUpdate = vec3.create();
+
+
 
 
 /** @global The View matrix */
@@ -46,6 +49,8 @@ var vMatrix = mat4.create();
 
 
 var yRotationMatrix = mat4.create();
+var yInverseRotationMatrix = mat4.create();
+
 
 
 
@@ -101,7 +106,7 @@ var viewPt = vec3.fromValues(0.0,0.0,0.0);
 
 /** @global Light position in VIEW coordinates */
 
-var lightPosition = [0,5,5];
+var lightPosition = [5,5,5];
 
 /** @global Ambient light color/intensity for Phong reflection */
 
@@ -207,6 +212,11 @@ function uploadModelViewMatrixToShader() {
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
   gl.uniformMatrix4fv(shaderProgram.yRotationMatrixUniform, false, yRotationMatrix);
+
+  mat4.invert(yInverseRotationMatrix,yRotationMatrix);
+
+  gl.uniformMatrix4fv(shaderProgram.yInverseRotationMatrixUniform, false,yInverseRotationMatrix);
+
 
   gl.uniformMatrix4fv(shaderProgram.pvInverseMatrixUniform, false, pvInverseMatrix);
 
@@ -519,6 +529,9 @@ function setupShaderLocations(shaderProgram)
 
   shaderProgram.yRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYRotationMatrix");
 
+  shaderProgram.yInverseRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYInverseRotationMatrix");
+
+
 
 
 
@@ -612,6 +625,9 @@ function setupShaders(outShaderProgram,vertexShaderName,fragmentShaderName) {
 
   shaderProgram.yRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYRotationMatrix");
 
+  shaderProgram.yInverseRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYInverseRotationMatrix");
+
+
 
 
 
@@ -693,6 +709,7 @@ function setMaterialUniforms(alpha,a,d,s) {
  */
 
 function setLightUniforms(loc,a,d,s) {
+
 
   gl.uniform3fv(shaderProgram.uniformLightPositionLoc, loc);
 
@@ -818,6 +835,16 @@ function draw() {
 
         setMatrixUniforms();
 
+
+		mat4.fromRotation(yInverseRotationMatrix, worldRotation, vec3.fromValues(0,1,0));
+
+
+        //vec3.rotateY(lightPositionUpdate,lightPosition,vec3.fromValues(0,0,0),worldRotation);
+
+
+
+        //console.log([lightPositionUpdate[0],lightPositionUpdate[2]]);
+
         setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
 
 
@@ -839,6 +866,7 @@ function draw() {
 
 
             setMatrixUniforms();
+
 
         	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
 
@@ -948,6 +976,10 @@ if (document.getElementById("wirepoly").checked)
 
             setMatrixUniforms();
 
+            //console.log(yInverseRotationMatrix);
+            vec3.rotateY(lightPositionUpdate,lightPosition,vec3.fromValues(0,0,0),worldRotation);
+
+
         	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
 
 
@@ -1010,11 +1042,20 @@ function handleKeyDown(event) {
 
             eulerY-= 1;
 
+
+
         } else if (currentlyPressedKeys["d"]) {
 
             // key D
 
             eulerY+= 1;
+
+            //var lp_x = eyePt[0];
+            //var lp_z = eyePt[2];
+
+            //lightPosition[0] = Math.cos(-degToRad(1))*lp_x-Math.sin(-degToRad(1))*lp_z;
+            //lightPosition[2] = Math.sin(-degToRad(1))*lp_x+Math.cos(-degToRad(1))*lp_z;
+
 
          
 
@@ -1037,6 +1078,11 @@ function handleKeyDown(event) {
 
             eyePt[0] = Math.cos(-worldRotationSpeed)*eyePt_x-Math.sin(-worldRotationSpeed)*eyePt_z;
             eyePt[2] = Math.sin(-worldRotationSpeed)*eyePt_x+Math.cos(-worldRotationSpeed)*eyePt_z;
+
+
+
+
+
 
 
 
