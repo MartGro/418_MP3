@@ -26,6 +26,12 @@ var canvas;
 
 var shaderProgram;
 
+var skyboxShaderProgram;
+
+var reflectionShaderProgram;
+var refractionShaderProgram;
+var phongShaderProgram;
+
 
 
 /** @global The Modelview matrix */
@@ -46,6 +52,8 @@ var yRotationMatrix = mat4.create();
 /** @global The Projection matrix */
 
 var pMatrix = mat4.create();
+
+var pvInverseMatrix = mat4.create();
 
 
 
@@ -193,15 +201,14 @@ function asyncGetFile(url) {
 
 function uploadModelViewMatrixToShader() {
 
-	
-
-
 
   gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
 
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
   gl.uniformMatrix4fv(shaderProgram.yRotationMatrixUniform, false, yRotationMatrix);
+
+  gl.uniformMatrix4fv(shaderProgram.pvInverseMatrixUniform, false, pvInverseMatrix);
 
 
 }
@@ -221,6 +228,8 @@ function uploadProjectionMatrixToShader() {
   gl.uniformMatrix4fv(shaderProgram.pMatrixUniform,
 
                       false, pMatrix);
+
+
 
 }
 
@@ -482,7 +491,7 @@ function setupShaders() {
 
   vertexShader = loadShaderFromDOM("reflection-shader-vs");
 
-  fragmentShader = loadShaderFromDOM("refraction-shader-fs");
+  fragmentShader = loadShaderFromDOM("reflection-shader-fs");
 
 
  console.log(fragmentShader);
@@ -539,6 +548,11 @@ function setupShaders() {
 
   shaderProgram.yRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYRotationMatrix");
 
+
+
+
+  //InverseProjectionMatrix
+  shaderProgram.pvInverseMatrixUniform = gl.getUniformLocation(shaderProgram, "uPVInverseMatrix");
 
 
 
@@ -706,6 +720,17 @@ function draw() {
 
     mat4.lookAt(vMatrix,eyePt,viewPt,up);
 
+    var invertedViewMatrix = mat4.create();
+
+    mat4.invert(invertedViewMatrix,vMatrix);
+
+    invertedViewMatrix[12] = 0;
+    invertedViewMatrix[13] = 0;
+    invertedViewMatrix[14] = 0;
+
+
+    mat4.multiply(pvInverseMatrix,pMatrix, vMatrix);
+	mat4.invert(pvInverseMatrix,pvInverseMatrix);
 
 
     //Draw Mesh
@@ -739,6 +764,9 @@ function draw() {
 
 
             //no cow this time
+
+
+
             myMesh.drawTriangles();
             cube.drawTriangles();
             skybox.drawTriangles();

@@ -110,6 +110,95 @@ void main(void) {
 
 
 
+<script id="skybox-shader-vs" type="x-shader/x-vertex">
+
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat4 uVMatrix;
+    
+    uniform mat4 uYRotationMatrix;
+    
+    uniform mat3 uNMatrix;
+
+    uniform vec3 uLightPosition;
+    uniform vec3 uAmbientLightColor;
+    uniform vec3 uDiffuseLightColor;
+    uniform vec3 uSpecularLightColor;
+
+    uniform vec3 uKAmbient;
+    uniform vec3 uKDiffuse;
+    uniform vec3 uKSpecular;
+    uniform float uShininess;
+
+    //varying vec3 vWorldPosition;
+    //varying vec3 vWorldNormal;
+
+    varying vec3 vertexPositionEye3;
+    varying vec3 normalEye;
+
+    void main(void) {
+
+    gl_Position = vec4(aVertexPosition, 1.0);
+    vertexPositionEye3 = aVertexPosition;
+    //vColor=vec4(normalEye,1);
+   
+    }
+</script>
+
+
+<script id="skybox-shader-fs" type="x-shader/x-fragment">
+precision highp float;
+
+
+//new
+//uniform sampler2D uSampler;
+uniform samplerCube uCubeSampler;
+uniform mat4 uYRotationMatrix;
+
+uniform mat4 uPVInverseMatrix;
+
+varying vec3 vertexPositionEye3;
+varying vec3 normalEye;
+
+void main(void) {
+
+        vec4 position = vec4(vertexPositionEye3, 1.0);
+        //vec3 viewVectorEye = normalize(vertexPositionEye3);
+        //vec3 direction = refract(viewVectorEye,normalEye,1.0/1.33);
+        //vec4 worldRotationDirection = uYRotationMatrix*vec4(direction,0);
+        vec4 textureSamplingVector = uPVInverseMatrix * position;
+
+        gl_FragColor =textureCube(uCubeSampler, normalize(textureSamplingVector.xyz/textureSamplingVector.w));
+        //gl_FragColor =textureCube(uCubeSampler, direction);// textureCube(uCubeSampler, vVertexNormal);
+
+ }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script src="gl-matrix-min.js"></script>
 <script src="webgl-utils.js"></script>
 <script src="TriMesh.js"></script>

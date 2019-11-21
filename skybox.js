@@ -36,6 +36,10 @@ class skybox{
 
         // Allocate vertex array
 
+
+
+//THIS SHIT SHOULD BE 3d, LATER
+
         this.vBuffer = [
       -10, -1,
        1, -1,
