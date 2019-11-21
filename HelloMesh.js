@@ -822,7 +822,61 @@ function draw() {
 
 
 
-        if ((document.getElementById("polygon").checked) || (document.getElementById("wirepoly").checked))
+        if (document.getElementById("polygon").checked)
+
+        {
+
+        	
+
+
+            //no cow this time
+
+            shaderProgram = reflectionShaderProgram;
+
+            gl.useProgram(reflectionShaderProgram);
+
+            setupShaderLocations(reflectionShaderProgram);
+
+
+            setMatrixUniforms();
+
+        	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+
+
+            setMaterialUniforms(shininess,kAmbient,
+
+                                kTerrainDiffuse,kSpecular);
+
+
+            myMesh.drawTriangles();
+
+
+            shaderProgram = skyboxShaderProgram;
+
+
+            gl.useProgram(skyboxShaderProgram);
+
+            setupShaderLocations(skyboxShaderProgram);
+
+
+            setMatrixUniforms();
+
+        	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+
+
+            setMaterialUniforms(shininess,kAmbient,
+
+                                kTerrainDiffuse,kSpecular);
+
+            cube.drawTriangles();
+
+            //skybox.drawTriangles();
+
+        }
+
+
+
+if (document.getElementById("wirepoly").checked)
 
         {
 
@@ -871,20 +925,6 @@ function draw() {
             cube.drawTriangles();
 
             //skybox.drawTriangles();
-
-        }
-
-
-
-        if(document.getElementById("wirepoly").checked)
-
-        {
-
-            setMaterialUniforms(shininess,kAmbient,
-
-                                kEdgeBlack,kSpecular);
-
-            myMesh.drawEdges();
 
         }
 

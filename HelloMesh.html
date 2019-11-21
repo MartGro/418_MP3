@@ -6,6 +6,11 @@
 </head>
 
 
+
+
+
+
+
 <script id="reflection-shader-vs" type="x-shader/x-vertex">
 
     attribute vec3 aVertexPosition;
@@ -205,24 +210,6 @@ void main(void) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <script src="gl-matrix-min.js"></script>
 <script src="webgl-utils.js"></script>
 <script src="TriMesh.js"></script>
@@ -235,14 +222,14 @@ void main(void) {
     <form id="input_form">
         <fieldset>
             <legend>Rendering Parameters</legend>
-         <input type="radio" name="primitive" id="wireframe" value="wireframe"> Wireframe
-         <input type="radio" name="primitive" id="polygon" id="polygon" value="polygon" checked> Polygon
-         <input type="radio" name="primitive" id="wirepoly" value="wirepoly" > Polygon with Edges
+         <input type="radio" name="primitive" id="wireframe" value="wireframe"> Normal Teapot
+         <input type="radio" name="primitive" id="polygon" id="polygon" value="polygon" checked> Reflective Teapot
+         <input type="radio" name="primitive" id="wirepoly" value="wirepoly" > Refractive Teapot
         </fieldset>
         <fieldset>
             <legend>Mesh Pose and Camera Position</legend>
-         <emph>Euler Y:</emph> <input type="number" id="eY" value="0"> Keys A and D <br><br>
-         <emph>Eye Z position:</emph> <input type="number" id="eZ" value="0" > Keys ArrowUp and ArrowDown
+         <emph>Euler Y of Mesh (degree):</emph> <input type="number" id="eY" value="0"> Keys A and D <br><br>
+         <emph>Eyepoint Rotation (radian):</emph> <input type="number" id="eZ" value="0" > Keys ArrowUp and ArrowDown
         </fieldset>
         </form>
 </body>
