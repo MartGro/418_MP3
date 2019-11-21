@@ -5,6 +5,146 @@
 <meta charset="utf-8">
 </head>
 
+<script id="shader-blinn-phong-vs" type="x-shader/x-vertex">
+   //implementation of the blinn phong lighting model
+   //based on the code of lab3
+   attribute vec3 aVertexNormal;
+   attribute vec3 aVertexPosition;
+
+   vec3 vertexPosition;
+   vec3 vertexNormal;
+
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat3 uNMatrix;
+
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    varying float vHeight;
+
+    uniform vec3 uLightPosition;
+
+    varying vec3 updatedLightPosition;
+
+
+    void main(void) {
+
+    // Get the vertex position in eye coordinates
+    vertexPosition = aVertexPosition;
+    vertexNormal = aVertexNormal;
+
+
+
+
+
+  //updatedLightPosition = vec3(0,0,0);
+  vec4 buffer = uMVMatrix*vec4(uLightPosition,1.0);
+  updatedLightPosition[0] = buffer[0];
+  updatedLightPosition[1] = buffer[1];
+  updatedLightPosition[2] = buffer[2];
+
+
+    vec4 vertexPositionEye4 = uMVMatrix * vec4(vertexPosition, 1.0);
+    vPosition = vertexPositionEye4.xyz / vertexPositionEye4.w;
+
+
+    // Transform the normal (n) to eye coordinates
+     vNormal = normalize(uNMatrix * vertexNormal);
+    // vNormal = normalize( vertexNormal);
+
+
+
+     gl_Position = uPMatrix*uMVMatrix*vec4(vertexPosition, 1.0);
+
+    }
+</script>
+
+
+<script id="shader-blinn-phong-fs" type="x-shader/x-fragment">
+	precision mediump float;
+
+    uniform vec3 uAmbientLightColor;
+    uniform vec3 uDiffuseLightColor;
+    uniform vec3 uSpecularLightColor;
+
+    uniform vec3 uKAmbient;
+    uniform vec3 uKDiffuse;
+    uniform vec3 uKSpecular;
+
+    uniform float uSpecularIntensity;
+    uniform float uShininess;
+
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+
+    varying vec3 updatedLightPosition;
+
+
+void main(void) {
+
+
+    // Calculate the vector (l) to the light source
+
+    vec3 vectorToLightSource = normalize(updatedLightPosition - vPosition);
+
+
+    // Calculate n dot l for diffuse lighting
+    float diffuseLightWeightning = max(dot(vNormal,
+                                    vectorToLightSource), 0.00);
+
+    // Calculate the reflection vector (r) that is needed for specular light
+    //vec3 reflectionVector = normalize(reflect(-vectorToLightSource, vNormal));
+
+
+    // The camera in eye coordinates is located in the origin and is pointing
+    // along the negative z-axis. Calculate viewVector (v)
+    // in eye coordinates as:
+    // (0.0, 0.0, 0.0) - vertexPositionEye3
+    vec3 viewVectorEye = -normalize(vPosition);
+
+
+    //blinn phong halfway vector
+    vec3 halfwayVector = normalize(viewVectorEye + vectorToLightSource);
+
+
+
+
+    //float rdotv = max(dot(reflectionVector, viewVectorEye), 0.00);
+
+
+
+    float specAngle = max(dot(halfwayVector, vNormal), 0.0);
+
+
+    float specularLightWeightning = pow(specAngle, uShininess);
+
+    // Sum up all three reflection components and send to the fragment shader
+
+
+	vec4 vColor = vec4(((uKAmbient*uKAmbient)*uAmbientLightColor
+                + (uKDiffuse*uKDiffuse) * diffuseLightWeightning
+                + (uKSpecular*uKSpecular) * specularLightWeightning*uSpecularIntensity),1.0);
+
+
+ vColor = vec4(((uKAmbient*uKAmbient)
+                +
+                 (uKDiffuse*uKDiffuse) * diffuseLightWeightning
+
+        + (uKSpecular*uKSpecular) * specularLightWeightning*uSpecularIntensity
+                ),1.0);
+
+
+
+    //fog in distance modelled by an interpolation of the rendered color and a neutral white
+
+
+    gl_FragColor = vColor;
+ }
+
+</script>
+
+
 
 
 

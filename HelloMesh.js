@@ -105,11 +105,11 @@ var lightPosition = [0,5,5];
 
 /** @global Ambient light color/intensity for Phong reflection */
 
-var lAmbient = [0,0,0];
+var lAmbient = [0.1,0.1,0.1];
 
 /** @global Diffuse light color/intensity for Phong reflection */
 
-var lDiffuse = [1,1,1];
+var lDiffuse = [0.7,0.7,0.7];
 
 /** @global Specular light color/intensity for Phong reflection */
 
@@ -121,7 +121,7 @@ var lSpecular =[0,0,0];
 
 /** @global Ambient material color/intensity for Phong reflection */
 
-var kAmbient = [1.0,1.0,1.0];
+var kAmbient = [205.0/255.0,163.0/255.0,63.0/255.0];
 
 /** @global Diffuse material color/intensity for Phong reflection */
 
@@ -129,11 +129,11 @@ var kTerrainDiffuse = [205.0/255.0,163.0/255.0,63.0/255.0];
 
 /** @global Specular material color/intensity for Phong reflection */
 
-var kSpecular = [0.0,0.0,0.0];
+var kSpecular = [1.0,1.0,1.0];
 
 /** @global Shininess exponent for Phong reflection */
 
-var shininess = 23;
+var shininess = 300;
 
 /** @global Edge color fpr wireframeish rendering */
 
@@ -938,7 +938,45 @@ if (document.getElementById("wirepoly").checked)
 
                                 kEdgeWhite,kSpecular);
 
-            myMesh.drawEdges();
+
+            shaderProgram = phongShaderProgram;
+
+            gl.useProgram(phongShaderProgram);
+
+            setupShaderLocations(phongShaderProgram);
+
+
+            setMatrixUniforms();
+
+        	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+
+
+            setMaterialUniforms(shininess,kAmbient,
+
+                                kTerrainDiffuse,kSpecular);
+
+
+            myMesh.drawTriangles();
+
+
+            shaderProgram = skyboxShaderProgram;
+
+
+            gl.useProgram(skyboxShaderProgram);
+
+            setupShaderLocations(skyboxShaderProgram);
+
+
+            setMatrixUniforms();
+
+        	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+
+
+            setMaterialUniforms(shininess,kAmbient,
+
+                                kTerrainDiffuse,kSpecular);
+
+            cube.drawTriangles();
 
         }
 
@@ -1056,9 +1094,9 @@ function handleKeyUp(event) {
 
   	 skyboxShaderProgram  = setupShaders(skyboxShaderProgram,"reflection-shader-vs","straight-shader-fs");
 
-	 reflectionShaderProgram = setupShaders(skyboxShaderProgram,"reflection-shader-vs","reflection-shader-fs");;
-     refractionShaderProgram = setupShaders(skyboxShaderProgram,"reflection-shader-vs","refraction-shader-fs");;
-	// phongShaderProgram;
+	 reflectionShaderProgram = setupShaders(skyboxShaderProgram,"reflection-shader-vs","reflection-shader-fs");
+     refractionShaderProgram = setupShaders(skyboxShaderProgram,"reflection-shader-vs","refraction-shader-fs");
+	 phongShaderProgram = setupShaders(skyboxShaderProgram,"shader-blinn-phong-vs","shader-blinn-phong-fs");
 
 
   setupMesh("teapot_0.obj");
