@@ -487,14 +487,78 @@ function loadShaderFromDOM(id) {
 
  */
 
-function setupShaders() {
 
-  vertexShader = loadShaderFromDOM("reflection-shader-vs");
+function setupShaderLocations(shaderProgram)
+{
 
-  fragmentShader = loadShaderFromDOM("reflection-shader-fs");
+	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+
+  gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
 
- console.log(fragmentShader);
+
+  shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+
+  gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+
+  //new
+  shaderProgram.textureCoords =  gl.getAttribLocation(shaderProgram, "aVertexTextureCoords");
+  gl.enableVertexAttribArray(shaderProgram.textureCoords);
+
+
+
+
+  shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+
+  shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+
+  shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+
+  shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
+
+  shaderProgram.yRotationMatrixUniform = gl.getUniformLocation(shaderProgram, "uYRotationMatrix");
+
+
+
+
+  //InverseProjectionMatrix
+  shaderProgram.pvInverseMatrixUniform = gl.getUniformLocation(shaderProgram, "uPVInverseMatrix");
+
+
+
+  shaderProgram.uniformLightPositionLoc = gl.getUniformLocation(shaderProgram, "uLightPosition");
+
+  shaderProgram.uniformAmbientLightColorLoc = gl.getUniformLocation(shaderProgram, "uAmbientLightColor");
+
+  shaderProgram.uniformDiffuseLightColorLoc = gl.getUniformLocation(shaderProgram, "uDiffuseLightColor");
+
+  shaderProgram.uniformSpecularLightColorLoc = gl.getUniformLocation(shaderProgram, "uSpecularLightColor");
+
+  shaderProgram.uniformShininessLoc = gl.getUniformLocation(shaderProgram, "uShininess");
+
+  shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");
+
+  shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
+
+  shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
+
+  shaderProgram.cubeSamplerLoc = gl.getUniformLocation(shaderProgram,"uCubeSampler");
+
+};
+
+
+function setupShaders(outShaderProgram,vertexShaderName,fragmentShaderName) {
+
+  //vertexShader = loadShaderFromDOM("reflection-shader-vs");
+
+  //fragmentShader = loadShaderFromDOM("straight-shader-fs");
+
+
+ vertexShader = loadShaderFromDOM(vertexShaderName);
+ fragmentShader = loadShaderFromDOM(fragmentShaderName);
+
+ console.log(fragmentShaderName);
 
   shaderProgram = gl.createProgram();
 
@@ -573,6 +637,10 @@ function setupShaders() {
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
 
   shaderProgram.cubeSamplerLoc = gl.getUniformLocation(shaderProgram,"uCubeSampler");
+
+  outShaderProgram = shaderProgram;
+
+  return shaderProgram;
 
 }
 
@@ -758,18 +826,51 @@ function draw() {
 
         {
 
+        	
+
+
+            //no cow this time
+
+            shaderProgram = refractionShaderProgram;
+
+            gl.useProgram(refractionShaderProgram);
+
+            setupShaderLocations(refractionShaderProgram);
+
+
+            setMatrixUniforms();
+
+        	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+
+
             setMaterialUniforms(shininess,kAmbient,
 
                                 kTerrainDiffuse,kSpecular);
 
 
-            //no cow this time
-
-
-
             myMesh.drawTriangles();
+
+
+            shaderProgram = skyboxShaderProgram;
+
+
+            gl.useProgram(skyboxShaderProgram);
+
+            setupShaderLocations(skyboxShaderProgram);
+
+
+            setMatrixUniforms();
+
+        	setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+
+
+            setMaterialUniforms(shininess,kAmbient,
+
+                                kTerrainDiffuse,kSpecular);
+
             cube.drawTriangles();
-            skybox.drawTriangles();
+
+            //skybox.drawTriangles();
 
         }
 
@@ -911,7 +1012,14 @@ function handleKeyUp(event) {
 
   gl = createGLContext(canvas);
 
-  setupShaders();
+ // setupShaders();
+
+  	 skyboxShaderProgram  = setupShaders(skyboxShaderProgram,"reflection-shader-vs","straight-shader-fs");
+
+	 reflectionShaderProgram = setupShaders(skyboxShaderProgram,"reflection-shader-vs","reflection-shader-fs");;
+     refractionShaderProgram = setupShaders(skyboxShaderProgram,"reflection-shader-vs","refraction-shader-fs");;
+	// phongShaderProgram;
+
 
   setupMesh("teapot_0.obj");
 

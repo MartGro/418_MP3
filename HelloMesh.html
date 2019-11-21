@@ -108,6 +108,30 @@ void main(void) {
 
 
 
+<script id="straight-shader-fs" type="x-shader/x-fragment">
+precision highp float;
+
+
+//new
+//uniform sampler2D uSampler;
+uniform samplerCube uCubeSampler;
+uniform mat4 uYRotationMatrix;
+
+varying vec3 vertexPositionEye3;
+
+varying vec3 normalEye;
+
+void main(void) {
+        vec3 viewVectorEye = normalize(vertexPositionEye3);
+
+        
+        vec4 worldRotationDirection = uYRotationMatrix*vec4(viewVectorEye,0);
+
+        gl_FragColor =textureCube(uCubeSampler, worldRotationDirection.xyz);// textureCube(uCubeSampler, vVertexNormal);
+
+ }
+</script>
+
 
 
 <script id="skybox-shader-vs" type="x-shader/x-vertex">
